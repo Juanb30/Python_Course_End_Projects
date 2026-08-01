@@ -1,5 +1,12 @@
-# This script runs a text-based adventure game where the player searches for treasure.
+"""Text-based Adventure Game.
 
+A small, educational CLI game where the player chooses between
+the forest or cave to search for a legendary treasure.
+
+This module contains the main game loop and helper functions.
+"""
+
+# Visual separators used throughout the UI
 LINE = "=" * 48
 DIVIDER = "-" * 48
 
@@ -16,19 +23,20 @@ def display_title():
 
 def get_valid_choice(prompt):
     """Ask the player to enter either 1 or 2."""
-
+    # Loop until the player supplies a supported option
     while True:
         choice = input(prompt).strip()
 
         if choice in ("1", "2"):
             return choice
 
+        # Inform the player when input is not valid and repeat
         print("Invalid choice. Please enter 1 or 2.")
 
 
 def start_game():
     """Display the introduction and collect the player's first choice."""
-
+    # Show the title and prompt for the player's name (must be non-empty)
     display_title()
 
     player_name = input("\nWhat is your name? ").strip()
@@ -81,7 +89,7 @@ def display_game_over():
 
 def forest_path(player_name):
     """Handle the player's choices in the forest."""
-
+    # Present the forest scenario and two simple actions
     print(f"\n{DIVIDER}")
     print(f"{player_name}, you enter the dark forest.")
     print(DIVIDER)
@@ -93,6 +101,7 @@ def forest_path(player_name):
 
     choice = get_valid_choice("\nChoose an action (1 or 2): ")
 
+    # Choice 1 is the successful path, 2 leads to defeat
     if choice == "1":
         print("\nYou follow the river deeper into the forest.")
         print("The water leads you to a hidden waterfall.")
@@ -102,6 +111,7 @@ def forest_path(player_name):
         display_victory(player_name)
         return "Forest", "Victory"
 
+    # Climbing the tree leads to a fall and game over
     print("\nYou climb the tree to search for the treasure.")
     print("A branch breaks beneath you, and you fall to the ground.")
 
@@ -111,7 +121,7 @@ def forest_path(player_name):
 
 def cave_path(player_name):
     """Handle the player's choices in the cave."""
-
+    # Present the cave scenario with a light-or-not choice
     print(f"\n{DIVIDER}")
     print(f"{player_name}, you enter the mysterious cave.")
     print(DIVIDER)
@@ -123,6 +133,7 @@ def cave_path(player_name):
 
     choice = get_valid_choice("\nChoose an action (1 or 2): ")
 
+    # Lighting the torch reveals the correct path
     if choice == "1":
         print("\nYou light the torch and discover ancient markings.")
         print("The markings guide you through a hidden passage.")
@@ -131,6 +142,7 @@ def cave_path(player_name):
         display_victory(player_name)
         return "Cave", "Victory"
 
+    # Proceeding in the dark causes an accidental death
     print("\nYou continue through the cave without any light.")
     print("You cannot see a hidden pit ahead and fall into it.")
 
@@ -140,7 +152,7 @@ def cave_path(player_name):
 
 def display_summary(player_name, path, outcome):
     """Display a summary of the completed adventure."""
-
+    # Brief recap shown after each playthrough
     print(f"\n{DIVIDER}")
     print("               ADVENTURE SUMMARY")
     print(DIVIDER)
@@ -152,7 +164,7 @@ def display_summary(player_name, path, outcome):
 
 def play_again():
     """Ask the player whether they want to restart the game."""
-
+    # Return True to restart, False to exit the main loop
     print("\nWould you like to play another adventure?")
     print("1. Yes")
     print("2. No")
@@ -165,6 +177,7 @@ def play_again():
 def main():
     """Run the game and restart it when requested."""
 
+    # Main game loop — repeat until the player opts out
     playing = True
 
     while playing:

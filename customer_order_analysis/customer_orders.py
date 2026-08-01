@@ -1,15 +1,23 @@
-# This script analyzes customer orders to identify spending patterns,
-# product trends, customer classifications, and category revenue.
+"""Customer order analysis utilities and a small demo dataset.
+
+This module provides functions to analyze a set of predefined
+customer orders and print business insights such as top customers,
+category revenue, and most frequently purchased products.
+
+The bottom of the file contains a `main()` function that runs a
+complete analysis using the sample data when executed as a script.
+"""
 
 from collections import Counter
 
+# Visual separators used for CLI output
 LINE = "=" * 72
 DIVIDER = "-" * 72
 
 
-# -------------------------------------------------------------------
-# Predefined customer and order data
-# -------------------------------------------------------------------
+# ------------------------------------------------------------------
+# Sample data used by the demonstration analysis
+# ------------------------------------------------------------------
 
 customer_names = [
     "Alice",
@@ -60,7 +68,7 @@ product_categories = {
 
 def build_customer_orders(order_data):
     """Create a dictionary of customers and the products they purchased."""
-
+    # Map each customer name -> list of purchased products
     customer_orders = {}
 
     for customer, product, price, category in order_data:
@@ -80,12 +88,10 @@ def get_unique_categories(category_mapping):
 
 def calculate_customer_totals(customer_list, order_data):
     """Calculate the total amount spent by each customer."""
+    # Initialize totals to zero for all known customers
+    customer_totals = {customer: 0.0 for customer in customer_list}
 
-    customer_totals = {}
-
-    for customer in customer_list:
-        customer_totals[customer] = 0.0
-
+    # Sum prices from each order into the corresponding customer's total
     for customer, product, price, category in order_data:
         customer_totals[customer] += price
 
@@ -94,7 +100,7 @@ def calculate_customer_totals(customer_list, order_data):
 
 def classify_customer(total_spent):
     """Classify a customer based on total spending."""
-
+    # Simple tiering logic based on spending thresholds
     if total_spent > 100:
         return "High-Value Buyer"
 
@@ -117,7 +123,7 @@ def classify_all_customers(customer_totals):
 
 def calculate_category_revenue(order_data):
     """Calculate total revenue for each product category."""
-
+    # Sum revenues by category using a dictionary accumulator
     category_revenue = {}
 
     for customer, product, price, category in order_data:
@@ -134,19 +140,20 @@ def get_unique_products(order_data):
 
 def get_electronics_customers(order_data):
     """Return customers who purchased at least one electronics product."""
-
+    # Collect customers from orders where category equals 'Electronics'
     electronics_customers = [
         customer
         for customer, product, price, category in order_data
         if category == "Electronics"
     ]
 
+    # Remove duplicates and return a sorted list for consistent output
     return sorted(set(electronics_customers))
 
 
 def get_top_customers(customer_totals, number_of_customers=3):
     """Return the highest-spending customers using sorting."""
-
+    # Sort customers by total spent in descending order and return top N
     sorted_customers = sorted(
         customer_totals.items(),
         key=lambda customer_record: customer_record[1],
@@ -158,11 +165,8 @@ def get_top_customers(customer_totals, number_of_customers=3):
 
 def build_customer_category_sets(customer_list, order_data):
     """Create a dictionary mapping customers to purchased categories."""
-
-    customer_categories = {}
-
-    for customer in customer_list:
-        customer_categories[customer] = set()
+    # For each customer maintain a set of categories they have purchased from
+    customer_categories = {customer: set() for customer in customer_list}
 
     for customer, product, price, category in order_data:
         customer_categories[customer].add(category)
@@ -192,7 +196,7 @@ def get_customers_by_category(order_data, target_category):
 
 def get_product_purchase_counts(order_data):
     """Count how many times each product was purchased."""
-
+    # Build a simple list of product names and count occurrences with Counter
     product_names = [product for customer, product, price, category in order_data]
 
     return Counter(product_names)
@@ -213,7 +217,7 @@ def get_most_frequent_products(product_counts):
 
 def display_title():
     """Display the project title."""
-
+    # Simple header for CLI output
     print(f"\n{LINE}")
     print("                 CUSTOMER ORDER ANALYSIS")
     print("              E-Commerce Business Insights")
@@ -375,18 +379,20 @@ def display_business_insights(
     multi_category_customers,
 ):
     """Display major business insights from the analysis."""
-
+    # Compute derived metrics used for the printed insights
     high_value_customers = [
         customer
         for customer, classification in customer_classifications.items()
         if classification == "High-Value Buyer"
     ]
 
+    # Category with maximum revenue
     top_category = max(
         category_revenue,
         key=category_revenue.get,
     )
 
+    # Total and average figures used in several insight lines
     total_revenue = sum(category_revenue.values())
     average_customer_spending = total_revenue / len(customer_totals)
 
@@ -436,50 +442,38 @@ def display_business_insights(
 def main():
     """Run the complete customer order analysis."""
 
+    # Run the full analysis pipeline and print results to the console
     display_title()
 
+    # Data preparation
     customer_orders = build_customer_orders(orders)
     unique_categories = get_unique_categories(product_categories)
-    customer_totals = calculate_customer_totals(
-        customer_names,
-        orders,
-    )
+    customer_totals = calculate_customer_totals(customer_names, orders)
     customer_classifications = classify_all_customers(customer_totals)
     category_revenue = calculate_category_revenue(orders)
     unique_products = get_unique_products(orders)
     electronics_customers = get_electronics_customers(orders)
     top_customers = get_top_customers(customer_totals)
 
-    customer_categories = build_customer_category_sets(
-        customer_names,
-        orders,
-    )
-
+    # Build category sets and identify multi-category or common category customers
+    customer_categories = build_customer_category_sets(customer_names, orders)
     multi_category_customers = get_multi_category_customers(customer_categories)
 
-    electronics_customer_set = get_customers_by_category(
-        orders,
-        "Electronics",
-    )
+    electronics_customer_set = get_customers_by_category(orders, "Electronics")
+    clothing_customer_set = get_customers_by_category(orders, "Clothing")
 
-    clothing_customer_set = get_customers_by_category(
-        orders,
-        "Clothing",
-    )
-
-    # Set intersection identifies customers in both categories.
+    # Customers who purchased both electronics and clothing
     common_customers = electronics_customer_set & clothing_customer_set
 
+    # Product frequency analysis
     product_counts = get_product_purchase_counts(orders)
     most_frequent_products = get_most_frequent_products(product_counts)
 
+    # Display results in logical groups
     display_customer_order_dictionary(customer_orders)
     display_categories(unique_categories)
 
-    display_customer_summary(
-        customer_totals,
-        customer_classifications,
-    )
+    display_customer_summary(customer_totals, customer_classifications)
 
     display_category_revenue(category_revenue)
     display_unique_products(unique_products)
@@ -492,10 +486,7 @@ def main():
         common_customers,
     )
 
-    display_product_frequency(
-        product_counts,
-        most_frequent_products,
-    )
+    display_product_frequency(product_counts, most_frequent_products)
 
     display_business_insights(
         customer_totals,
