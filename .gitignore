@@ -17,3 +17,13 @@ Thumbs.db
 *.egg-info/
 dist/
 build/
+# Jupyter
+.ipynb_checkpoints/
+
+# Environment / credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials.json
